@@ -1,4 +1,5 @@
 module.exports = {
+    "parser": "babel-eslint",
     "rules": {
         "indent": [
             2,
@@ -15,11 +16,13 @@ module.exports = {
         "semi": [
             2,
             "always"
-        ]
+        ],
+        "no-unused-vars": 1
     },
     "env": {
         "es6": true,
-        "browser": true
+        "browser": true,
+        "node": true
     },
     "extends": "eslint:recommended",
     "ecmaFeatures": {
