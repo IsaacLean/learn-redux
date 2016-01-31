@@ -51,8 +51,27 @@ store.getState();
 // dispatch() lets you dispatch actions that change the state of your app.
 store.dispatch({ type: 'INCREMENT' });
 
+const Counter = ({ value, onIncrement, onDecrement }) => (
+    <div>
+        <h1>{value}</h1>
+        <button onClick={onIncrement}>+</button>
+        <button onClick={onDecrement}>-</button>
+    </div>
+);
+
 const render = () => {
-    document.body.innerText = store.getState();
+    ReactDOM.render(
+        <Counter
+            value={store.getState()}
+            onIncrement={() => store.dispatch({
+                type: 'INCREMENT'
+            })}
+            onDecrement={() => store.dispatch({
+                type: 'DECREMENT'
+            })}
+        />,
+        document.getElementById('root')
+    );
 };
 
 // subscribe() lets you register a callback that the Redux tool will call anytime
@@ -61,7 +80,3 @@ const render = () => {
 store.subscribe(render);
 
 render();
-
-document.addEventListener('click', () => {
-    store.dispatch({ type: 'INCREMENT'} );
-});
