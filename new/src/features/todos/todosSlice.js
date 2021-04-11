@@ -7,13 +7,22 @@ const initialState = {
   entities: {}
 }
 
-function nextTodoId(todos) {
-  const maxId = todos.reduce((maxId, todo) => Math.max(todo.id, maxId), -1)
-  return maxId + 1
-}
-
 export default function todosReducer(state = initialState, action) {
   switch(action.type) {
+    case 'todos/allCompleted': {
+      const newEntities = { ...state.entities }
+      Object.values(newEntities).forEach(todo => {
+        newEntities[todo.id] = {
+          ...todo,
+          completed: true
+        }
+      })
+      return {
+        ...state,
+        entities: newEntities
+      }
+    }
+
     case 'todos/colorSelected': {
       const { color, todoId } = action.payload
       const todo = state.entities[todoId]
@@ -26,6 +35,19 @@ export default function todosReducer(state = initialState, action) {
             color
           }
         }
+      }
+    }
+
+    case 'todos/completedCleared': {
+      const newEntities = { ...state.entities }
+      Object.values(newEntities).forEach(todo => {
+        if (todo.completed) {
+          delete newEntities[todo.id]
+        }
+      })
+      return { 
+        ...state,
+        entities: newEntities
       }
     }
 
@@ -81,6 +103,10 @@ export default function todosReducer(state = initialState, action) {
   }
 }
 
+export const allTodosCompleted = () => ({ type: 'todos/allCompleted' })
+
+export const completedTodosCleared = () => ({ type: 'todos/completedCleared' })
+
 export const todoAdded = todo => ({ type: 'todos/todoAdded', payload: todo })
 
 export const todoColorSelected = (todoId, color) => ({
@@ -113,37 +139,26 @@ export function saveNewTodo(text) {
   }
 }
 
-const selectTodoEntities = state => state.todos.entities
+export const selectTodoEntities = state => state.todos.entities
 
 export const selectTodos = createSelector(
   selectTodoEntities,
-  (entities) => {
-    const vals = Object.values(entities)
-    console.log(vals)
-    return vals
-  }
-)
-
-export const selectTodoById = (state, todoId) => {
-  return selectTodos(state).find(todo => todo.id === todoId)
-}
-
-export const selectTodoIds = createSelector(
-  selectTodos,
-  todos => todos.map(todo => todo.id)
+  (entities) => Object.values(entities)
 )
 
 export const selectFilteredTodos = createSelector(
   selectTodos,
   state => state.filters,
   (todos, filters) => {
-    const { status, colors } = filters
+    const { colors, status } = filters
     const showAllCompletions = status === StatusFilters.All
+
     if (showAllCompletions && colors.length === 0) {
       return todos
     }
 
     const completedStatus = status === StatusFilters.Completed
+
     return todos.filter(todo => {
       const statusMatches = 
         showAllCompletions || todo.completed === completedStatus
@@ -156,4 +171,13 @@ export const selectFilteredTodos = createSelector(
 export const selectFilteredTodoIds = createSelector(
   selectFilteredTodos,
   filteredTodos => filteredTodos.map(todo => todo.id)
+)
+
+export const selectTodoById = (state, todoId) => {
+  return selectTodos(state).find(todo => todo.id === todoId)
+}
+
+export const selectTodoIds = createSelector(
+  selectTodos,
+  todos => todos.map(todo => todo.id)
 )

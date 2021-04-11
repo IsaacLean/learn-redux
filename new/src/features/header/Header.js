@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-
 import { saveNewTodo } from '../todos/todosSlice'
 
 const Header = () => {

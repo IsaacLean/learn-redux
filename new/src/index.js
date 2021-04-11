@@ -1,12 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-
 import App from './App'
 import store from './store'
-import './index.css'
-
 import './api/server'
+import './index.css'
 
 import { fetchTodos } from './features/todos/todosSlice'
 store.dispatch(fetchTodos())
